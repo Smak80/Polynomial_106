@@ -1,16 +1,16 @@
-package ru.smak.polynomial106.math
+package ru.smak.polynomial106.math.polynomial
 
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
 
-class Polynomial(coeffs: Map<Int, Double>) {
-    private val _coeffs: MutableMap<Int, Double>
+open class Polynomial(coeffs: Map<Int, Double>) {
+    protected val _coeffs: MutableMap<Int, Double>
     val coeffs: Map<Int, Double>
         get() = _coeffs.toMap()
 
     init{
-        _coeffs = coeffs.filter { (k,v) -> v neq 0.0 }.toSortedMap()
+        _coeffs = coeffs.filter { (k,v) -> v neq 0.0 }.toMutableMap()
         if(_coeffs.isEmpty()) _coeffs[0] = 0.0
     }
 
@@ -20,13 +20,25 @@ class Polynomial(coeffs: Map<Int, Double>) {
         other._coeffs.forEach { (k, v) -> it[k]= v + (it[k] ?: 0.0) }
     })
 
+    operator fun plusAssign(other: Polynomial) {
+        other._coeffs.forEach { (k, v) -> _coeffs[k] = v + (_coeffs[k] ?: 0.0)}
+    }
+
     operator fun minus (other: Polynomial) = Polynomial(_coeffs.toMutableMap().also {
-        other._coeffs.forEach { (k, v) -> it[k]= v - (it[k] ?: 0.0) }
+        other._coeffs.forEach { (k, v) -> it[k]= (it[k] ?: 0.0) - v }
     })
+
+    operator fun minusAssign(other: Polynomial) {
+        other._coeffs.forEach { (k, v) -> _coeffs[k] = (_coeffs[k] ?: 0.0) - v}
+    }
 
     operator fun times(k: Double) = Polynomial(List(_coeffs.size){
         _coeffs.keys.elementAt(it) to _coeffs[_coeffs.keys.elementAt(it)]!! * k
     }.toMap())
+
+    operator fun timesAssign(k: Double){
+        _coeffs.keys.forEach { _coeffs[it] = _coeffs[it]!! * k }
+    }
 
     operator fun times(other: Polynomial) = Polynomial(mutableMapOf<Int, Double>().also{ c ->
         _coeffs.forEach{ (k1 , v1) ->
@@ -35,26 +47,28 @@ class Polynomial(coeffs: Map<Int, Double>) {
             }
         }
     })
+    operator fun timesAssign(other: Polynomial) {
+        _coeffs.apply {
+            putAll((this@Polynomial * other)._coeffs.also { _coeffs.clear() })
+        }
+    }
+
 
     operator fun div(scalar: Double) = Polynomial(_coeffs.map { (k, v) -> if (v eq 0.0) throw ArithmeticException("Division by zero") else k to v / scalar }.toMap())
 
-    operator fun invoke(x: Double) = _coeffs.toList().fold(0.0) {
-            result, value ->
-        result + x.pow(value.first) * value.second
-    }
+    operator fun invoke(x: Double) = _coeffs.entries.sumOf { (degree, value) -> x.pow(degree) * value }
 
     override fun toString() = toString("x")
 
-    fun toString(variable: String) = _coeffs.toList().reversed().map{ (k, v) ->
-        StringBuilder().apply {
+    fun toString(variable: String) = _coeffs.toSortedMap(reverseOrder()).map{ (k, v) ->
+        buildString {
             if (v.neq(0.0, 1e-12)) {
                 append(if (v > 0.0 || v.eq(0.0, 1e-12)) if (k != _coeffs.keys.max()) "+" else "" else "-")
                 if (abs(v) neq 1.0 || k == 0) append(abs(v))
                 if (k != 0) append(variable)
                 if (k > 1) append("^$k")
             }
-        }.toString()
-
+        }
     }.joinToString("")
 
 }

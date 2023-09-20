@@ -1,7 +1,6 @@
 package ru.smak.polynomial106
 
-import ru.smak.polynomial106.math.Polynomial
-import ru.smak.polynomial106.math.eq
+import ru.smak.polynomial106.math.polynomial.Polynomial
 
 var t: Polynomial? = null
 fun main() {
@@ -14,11 +13,13 @@ fun main() {
     println(p1*p2)
 
     val p7 = Polynomial(4.0, 1.0, 1.0)
-    println(p7(2.0))
+    p7 *= Polynomial(1.0, 1.0)
+    println(p7)
 
-    println(0.6+0.1)
-    println(0.8-0.1)
-    println(0.6+0.1 == 0.8-0.1)
-    println((6e-20+2e-20) eq (8e-20-1e-20))
-    println(Math.ulp(0.0))
+
+//    println(0.6+0.1)
+//    println(0.8-0.1)
+//    println(0.6+0.1 == 0.8-0.1)
+//    println((6e-20+2e-20) eq (8e-20-1e-20))
+//    println(Math.ulp(0.0))
 }
