@@ -19,8 +19,8 @@ class LagrangePoly(points: Map<Double, Double>) : Polynomial() {
         }
     }
 
-    private fun createFundamental(xk: Double):Polynomial{
-        val result : Polynomial = Polynomial(1.0)
-        _points.forEach{(xi, y) -> }
+    private fun createFundamental(xk: Double) = Polynomial(1.0).also {
+        _points.forEach { (xi, y) -> if (xi neq xk) it *= Polynomial(-xi, 1.0) / (xk - xi) }
     }
+
 }

@@ -1,5 +1,6 @@
 package ru.smak.polynomial106
 
+import ru.smak.polynomial106.math.polynomial.LagrangePoly
 import ru.smak.polynomial106.math.polynomial.Polynomial
 
 var t: Polynomial? = null
@@ -15,6 +16,8 @@ fun main() {
     val p7 = Polynomial(4.0, 1.0, 1.0)
     p7 *= Polynomial(1.0, 1.0)
     println(p7)
+
+    val lp1 = LagrangePoly(mapOf(-1.0 to -4.0, 0.0 to -3.0, 1.0 to -2.0, 2.0 to 5.0)).also { println(it) }
 
 
 //    println(0.6+0.1)
